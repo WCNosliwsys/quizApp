@@ -27,6 +27,19 @@ class QuestionService {
   nextQuestion() {
     if (questionNumber < questions.length - 1) {
       questionNumber++;
-    } 
+    }
+  }
+
+  bool isFinished() {
+    if (questionNumber >= questions.length - 1) {
+      return true;
+    }
+    return false;
+  }
+
+  //Reiniciar el quiz
+
+  void restart() {
+    questionNumber = 0;
   }
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:quizzapp/service/question_service.dart';
+import 'package:rflutter_alert/rflutter_alert.dart';
 
 class QuizPage extends StatefulWidget {
   const QuizPage({super.key});
@@ -12,6 +13,7 @@ class _QuizPageState extends State<QuizPage> {
   QuestionService miQuiz = QuestionService();
 
   List<Widget> puntaje = [];
+  int correctas = 0;
 
   checkAnswer(bool miRespuesta) {
     bool correctAnswer = miQuiz.getQuestionAnswer();
@@ -22,6 +24,7 @@ class _QuizPageState extends State<QuizPage> {
           color: Colors.greenAccent,
         ),
       );
+      correctas++;
     } else {
       puntaje.add(
         Icon(
@@ -30,9 +33,33 @@ class _QuizPageState extends State<QuizPage> {
         ),
       );
     }
-    miQuiz.nextQuestion();
+    if (!miQuiz.isFinished()) {
+      miQuiz.nextQuestion();
+    } else {
+      Alert(
+        context: context,
+        type: AlertType.success,
+        title: "QuizApp",
+        desc:
+            "El quiz ha finalizado, tu puntaje ha sido $correctas de ${puntaje.length}",
+        buttons: [
+          DialogButton(
+            child: Text(
+              "Aceptar",
+              style: TextStyle(color: Colors.white, fontSize: 20),
+            ),
+            onPressed: () => Navigator.pop(context),
+            width: 120,
+          )
+        ],
+      ).show();
 
+      miQuiz.restart();
+      puntaje.clear();
+      correctas = 0;
+    }
     setState(() {});
+
     print(puntaje);
   }
 
@@ -93,13 +120,7 @@ class _QuizPageState extends State<QuizPage> {
             ),
           ),
           Row(
-            children: [
-              Icon(
-                Icons.close,
-                color: Colors.redAccent,
-              ),
-              ...puntaje
-            ],
+            children: puntaje,
           ),
         ]),
       ),
